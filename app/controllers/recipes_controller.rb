@@ -1,7 +1,8 @@
 class RecipesController < ApplicationController
-  before_action :set_recipe, only: %i[destroy]
+  # before_action :set_recipe, only: [:show, :destroy, :public_recipes]
+  before_action :set_recipe, only: %i[show destroy]
   load_and_authorize_resource
-  before_action :authenticate_user!, except: [:public_recipes]
+  before_action :authenticate_user!
 
   # GET /recipes or /recipes.json
   def index
@@ -50,6 +51,7 @@ class RecipesController < ApplicationController
   end
 
   def public_recipes
+    # @recent_public_recipes = Recipe.where(public: true).order(created_at: :desc)
     @recent_public_recipes = Recipe.recent_public.includes(:user)
   end
 
