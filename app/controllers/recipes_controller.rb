@@ -4,24 +4,20 @@ class RecipesController < ApplicationController
   load_and_authorize_resource
   before_action :authenticate_user!
 
-  # GET /recipes or /recipes.json
   def index
     @recipes = current_user.recipes
   end
 
-  # GET /recipes/1 or /recipes/1.json
   def show
     @recipe = Recipe.includes(:foods).find(params[:id])
     @recipe_foods = @recipe.recipe_foods.includes(:food)
     @foods = Food.all
   end
 
-  # GET /recipes/new
   def new
     @recipe = current_user.recipes.build
   end
 
-  # POST /recipes or /recipes.json
   def create
     @recipe = current_user.recipes.build(recipe_params)
 
@@ -51,7 +47,6 @@ class RecipesController < ApplicationController
   end
 
   def public_recipes
-    # @recent_public_recipes = Recipe.where(public: true).order(created_at: :desc)
     @recent_public_recipes = Recipe.recent_public.includes(:user)
   end
 
@@ -59,15 +54,12 @@ class RecipesController < ApplicationController
 
   def set_recipe
     @recipe = if params[:id] == 'public_recipes'
-                # No need to find a recipe when displaying public recipes
                 nil
               else
-                # Find the recipe by its id
                 current_user.recipes.find(params[:id])
               end
   end
 
-  # Only allow a list of trusted parameters through.
   def recipe_params
     params.require(:recipe).permit(:name, :preparation_time, :cooking_time, :description, :public, :user_id)
   end
